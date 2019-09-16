@@ -1,6 +1,5 @@
 package org.openjfx.physik.objects;
 
-import javafx.geometry.Bounds;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
@@ -8,6 +7,7 @@ import org.openjfx.physik.PhysicEnvironment;
 
 public class PhyCircle extends PhyObj
 {
+	@SuppressWarnings("FieldCanBeLocal")
 	private boolean onFlor = false;
 
 	public PhyCircle(Shape obj, PhysicEnvironment phyEn)
@@ -19,8 +19,12 @@ public class PhyCircle extends PhyObj
 	@Override
 	public void update(Pane pane)
 	{
-		Bounds bounds = pane.getBoundsInLocal();
-		onFlor = obj.getLayoutY() + ((Circle) obj).getRadius() >= bounds.getHeight();
+		double maxY = pane.getHeight();
+		double maxX = pane.getWidth();
+
+
+		onFlor = obj.getLayoutY() + ((Circle) obj).getRadius() >= maxY;
+
 
 		if(!onFlor)
 		{
@@ -28,9 +32,9 @@ public class PhyCircle extends PhyObj
 		}
 		else if(dy>0)
 		{
-			if(obj.getLayoutY() + ((Circle) obj).getRadius() > bounds.getHeight())
+			if(obj.getLayoutY() + ((Circle) obj).getRadius() > maxY)
 			{
-				dy = -dy + ((Circle) obj).getRadius()/10;
+				dy = -dy + ((Circle) obj).getRadius()/5;
 
 				if(dy>-0.3)
 				{
@@ -47,9 +51,24 @@ public class PhyCircle extends PhyObj
 		}
 		else if(dy==0)
 		{
-			obj.setLayoutY(bounds.getMaxY()-((Circle) obj).getRadius());
-			System.out.println("DY: "+bounds.getMaxY());
-			System.out.println(obj.getLayoutY() + ((Circle) obj).getRadius() - bounds.getHeight());
+			obj.setLayoutY(maxY-((Circle) obj).getRadius());
+		}
+
+		collision();
+
+		if(obj.getLayoutX()+((Circle) obj).getRadius()>=maxX)
+		{
+			if(dx>0)
+			{
+				dx = -dx;
+			}
+		}
+		else if(obj.getLayoutX()<((Circle) obj).getRadius())
+		{
+			if(dx<0)
+			{
+				dx = -dx;
+			}
 		}
 
 
@@ -71,5 +90,6 @@ public class PhyCircle extends PhyObj
 		{
 			dx += phyEn.getAirResistance();
 		}
+
 	}
 }

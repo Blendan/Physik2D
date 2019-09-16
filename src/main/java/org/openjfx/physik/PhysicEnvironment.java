@@ -14,7 +14,7 @@ public class PhysicEnvironment
 	private ArrayList<PhyObj> physicObjs = new ArrayList<>();
 
 	private double gravity = 0.2;
-	private double airResistance = 0.1;
+	private double airResistance = 0.001;
 
 	public PhysicEnvironment(Pane pane)
 	{
@@ -35,6 +35,8 @@ public class PhysicEnvironment
 				}));
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.play();
+
+		physicObjs.add(phyObj);
 	}
 
 	public double getGravity()
@@ -55,5 +57,10 @@ public class PhysicEnvironment
 	public void setAirResistance(double airResistance)
 	{
 		this.airResistance = airResistance;
+	}
+
+	public ArrayList<PhyObj> getObjs()
+	{
+		return new ArrayList<PhyObj>(physicObjs);
 	}
 }

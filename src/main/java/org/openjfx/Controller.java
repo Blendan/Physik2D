@@ -1,6 +1,8 @@
 package org.openjfx;
 
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -10,16 +12,24 @@ import org.openjfx.physik.objects.PhyObj;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 
 public class Controller implements Initializable
 {
 	public Pane canvas;
+	public Button btnRender;
+	public TextField txtGravity;
+	public Button btnPause;
 	private PhysicEnvironment physicEnvironment;
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle)
 	{
 		physicEnvironment = new PhysicEnvironment(canvas);
+
+		btnPause.setOnAction(e->physicEnvironment.setPause(!physicEnvironment.isPause()));
+
+		btnRender.setOnAction(e->renderSettings());
 
 		physicEnvironment.setGravity(0.2);
 
@@ -34,6 +44,20 @@ public class Controller implements Initializable
 			temp.setDx(Math.random()*20);
 			temp.setMass(Math.random()*3);
 			physicEnvironment.addNew(temp);
+		}
+	}
+
+	private void renderSettings()
+	{
+		try
+		{
+			double gravity = Double.parseDouble(txtGravity.getText());
+
+			physicEnvironment.setGravity(gravity);
+		}
+		catch (Exception e)
+		{
+			System.out.println("Der DEPP");
 		}
 	}
 }

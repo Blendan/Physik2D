@@ -26,7 +26,7 @@ public class PhyCircle extends PhyObj
 		onFlor = obj.getLayoutY() + ((Circle) obj).getRadius() >= maxY;
 
 
-		if(!onFlor)
+		if(!onFlor||phyEn.getGravity()<0)
 		{
 			dy += phyEn.getGravity();
 		}
@@ -40,9 +40,6 @@ public class PhyCircle extends PhyObj
 				{
 					dy = 0;
 				}
-
-
-				System.out.println(dy);
 			}
 			else
 			{

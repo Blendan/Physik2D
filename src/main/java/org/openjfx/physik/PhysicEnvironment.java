@@ -15,6 +15,7 @@ public class PhysicEnvironment
 
 	private double gravity = 0.2;
 	private double airResistance = 0.001;
+	private boolean pause = false;
 
 	public PhysicEnvironment(Pane pane)
 	{
@@ -28,10 +29,13 @@ public class PhysicEnvironment
 		Timeline timeline = new Timeline(new KeyFrame(Duration.millis(20),
 				t ->
 				{
-					phyObj.update(pane);
+					if(!pause)
+					{
+						phyObj.update(pane);
 
-					phyObj.getObj().setLayoutX(phyObj.getObj().getLayoutX() + phyObj.getDx());
-					phyObj.getObj().setLayoutY(phyObj.getObj().getLayoutY() + phyObj.getDy());
+						phyObj.getObj().setLayoutX(phyObj.getObj().getLayoutX() + phyObj.getDx());
+						phyObj.getObj().setLayoutY(phyObj.getObj().getLayoutY() + phyObj.getDy());
+					}
 				}));
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.play();
@@ -62,5 +66,15 @@ public class PhysicEnvironment
 	public ArrayList<PhyObj> getObjs()
 	{
 		return new ArrayList<PhyObj>(physicObjs);
+	}
+
+	public boolean isPause()
+	{
+		return pause;
+	}
+
+	public void setPause(boolean pause)
+	{
+		this.pause = pause;
 	}
 }

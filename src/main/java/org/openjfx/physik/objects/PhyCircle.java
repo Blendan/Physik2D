@@ -28,13 +28,13 @@ public class PhyCircle extends PhyObj
 
 		if(!onFlor||phyEn.getGravity()<0)
 		{
-			dy += phyEn.getGravity();
+			dy += phyEn.getGravity()*(getMass()/5);
 		}
 		else if(dy>0)
 		{
 			if(obj.getLayoutY() + ((Circle) obj).getRadius() > maxY)
 			{
-				dy = -dy + ((Circle) obj).getRadius()/5;
+				dy = -dy + getMass()*phyEn.getGravity();
 
 				if(dy>-0.3)
 				{
@@ -52,6 +52,22 @@ public class PhyCircle extends PhyObj
 		}
 
 		collision();
+
+		if(obj.getLayoutY() + ((Circle) obj).getRadius() > maxY)
+		{
+			if(dy>0)
+			{
+				dy = -dy;
+			}
+		}
+
+		if(obj.getLayoutY()-((Circle) obj).getRadius()<=0)
+		{
+			if(dy<0)
+			{
+				dy = -dy;
+			}
+		}
 
 		if(obj.getLayoutX()+((Circle) obj).getRadius()>=maxX)
 		{

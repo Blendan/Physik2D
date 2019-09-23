@@ -22,6 +22,7 @@
             <TextField prefWidth="30.0" text="1" fx:id="txtGravity"/>
             <Button mnemonicParsing="false" text="Render" fx:id="btnRender"/>
             <Button mnemonicParsing="false" text="Pause" fx:id="btnPause"/>
+            <Button mnemonicParsing="false" text="Restart" fx:id="btnRestart"/>
          </children>
       </HBox>
    </bottom>

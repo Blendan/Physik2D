@@ -12,7 +12,6 @@ import org.openjfx.physik.objects.PhyObj;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutionException;
 
 public class Controller implements Initializable
 {
@@ -20,6 +19,7 @@ public class Controller implements Initializable
 	public Button btnRender;
 	public TextField txtGravity;
 	public Button btnPause;
+	public Button btnRestart;
 	private PhysicEnvironment physicEnvironment;
 
 	@Override
@@ -29,20 +29,30 @@ public class Controller implements Initializable
 
 		btnPause.setOnAction(e->physicEnvironment.setPause(!physicEnvironment.isPause()));
 
+		btnRestart.setOnAction(e->start());
+
 		btnRender.setOnAction(e->renderSettings());
 
 		physicEnvironment.setGravity(0.2);
+		physicEnvironment.setPause(true);
 
-		PhyObj temp = new PhyCircle(new Circle(10, Color.CADETBLUE),physicEnvironment);
-		temp.getObj().relocate(5, 5);
-		physicEnvironment.addNew(temp);
+		start();
+	}
 
-		for (int i = 0; i < 100; i ++)
+	private void start()
+	{
+		System.out.println("test");
+		physicEnvironment.clear();
+
+		PhyObj temp;
+
+		for (int i = 0; i < 30; i ++)
 		{
-			temp = new PhyCircle(new Circle(Math.random()*10+3, Color.CADETBLUE),physicEnvironment);
-			temp.getObj().relocate(Math.random()*10, Math.random()*10);
+			double size = Math.random()*20+5;
+			temp = new PhyCircle(new Circle(size, Color.CADETBLUE),physicEnvironment);
+			temp.getObj().relocate(Math.random()*50, (Math.random()+size)*10);
 			temp.setDx(Math.random()*20);
-			temp.setMass(Math.random()*3);
+			temp.setMass(size);
 			physicEnvironment.addNew(temp);
 		}
 	}

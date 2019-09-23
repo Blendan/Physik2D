@@ -12,6 +12,7 @@ public class PhysicEnvironment
 {
 	private Pane pane;
 	private ArrayList<PhyObj> physicObjs = new ArrayList<>();
+	private ArrayList<Timeline> timelines = new ArrayList<>();
 
 	private double gravity = 0.2;
 	private double airResistance = 0.001;
@@ -20,6 +21,14 @@ public class PhysicEnvironment
 	public PhysicEnvironment(Pane pane)
 	{
 		this.pane = pane;
+	}
+
+	public void clear()
+	{
+		physicObjs.clear();
+		pane.getChildren().clear();
+
+		timelines.forEach(Timeline::stop);
 	}
 
 	public void addNew(PhyObj phyObj)
@@ -39,6 +48,8 @@ public class PhysicEnvironment
 				}));
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.play();
+
+		timelines.add(timeline);
 
 		physicObjs.add(phyObj);
 	}

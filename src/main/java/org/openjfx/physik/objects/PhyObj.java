@@ -1,8 +1,6 @@
 package org.openjfx.physik.objects;
 
-import javafx.geometry.Bounds;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import org.openjfx.physik.PhysicEnvironment;
 
@@ -63,68 +61,69 @@ public abstract class PhyObj
 	void collision()
 	{
 		ArrayList<PhyObj> list = phyEn.getObjs();
+		setCalculated(false);
 
-		for (PhyObj o: list)
+
+		for (PhyObj o : list)
 		{
-			if(o!=this)
+			if (o != this && !o.isCalculated())
 			{
 				Shape shape = o.getObj();
 
-				if(collides(o))
+				if (collides(o))
 				{
 					boolean noX = false;
 
-					if(o.getDx()==0&&getDx()==0)
+					if (o.getDx() == 0 && getDx() == 0)
 					{
 						noX = true;
 					}
-					else if(o.getDx()<0&&getDx()>0) // <-o this->
+					else if (o.getDx() < 0 && getDx() > 0) // <-o this->
 					{
-						if(shape.getLayoutX()<obj.getLayoutX())
+						if (shape.getLayoutX() < obj.getLayoutX())
 						{
 							noX = true;
 						}
 					}
-					else if(o.getDx()>0&&getDx()<0)// <-this o->
+					else if (o.getDx() > 0 && getDx() < 0)// <-this o->
 					{
-						if(shape.getLayoutX()>obj.getLayoutX())
+						if (shape.getLayoutX() > obj.getLayoutX())
 						{
 							noX = true;
 						}
 					}
 
 					boolean noY = false;
-					if(o.getDy()==0&&getDy()==0)
+					if (o.getDy() == 0 && getDy() == 0)
 					{
 						noY = true;
 					}
-					else if(o.getDy()<0&&getDy()>0) // <-o this->
+					else if (o.getDy() < 0 && getDy() > 0) // <-o this->
 					{
-						if(shape.getLayoutY()<obj.getLayoutY())
+						if (shape.getLayoutY() < obj.getLayoutY())
 						{
 							noY = true;
 						}
 					}
-					else if(o.getDy()>0&&getDy()<0)// <-this o->
+					else if (o.getDy() > 0 && getDy() < 0)// <-this o->
 					{
-						if(shape.getLayoutY()>obj.getLayoutY())
+						if (shape.getLayoutY() > obj.getLayoutY())
 						{
 							noY = true;
 						}
 					}
 
-					if(!noX||!noY)
+					if (!noX || !noY)
 					{
-						System.out.println("DONG");
-						/*
 						double vx = shape.getLayoutX() - obj.getLayoutX();
 						double vy = shape.getLayoutY() - obj.getLayoutY();
 
-						double dotPro = vx * 0 + vy * -1;
-						double mag1 = Math.sqrt(vx * vx + vy * vy);
-						double mag2 = Math.sqrt(1);
+						double deg = Math.toDegrees(Math.atan2(vy, vx));
 
-						double deg = Math.cos(dotPro / (mag1 * mag2));
+						if (deg < 0)
+						{
+							deg += 360;
+						}
 
 						double number = deg / 360;
 
@@ -138,28 +137,72 @@ public abstract class PhyObj
 						{
 							percentHorizontal = (number % 0.25) * 4;
 						}
-						*/
 
 
-						if(!noX)
+						double tempDx = dx;
+						double tempDxO = o.dx;
+						if (!noX)
 						{
-							double tempDx = dx;
-							double tempDxO = o.dx;
-
 							dx = newVelocity(mass, o.mass, tempDx, tempDxO);
 							o.dx = newVelocity(o.mass, mass, tempDxO, tempDx);
 						}
 
-						if(!noY)
-						{
-							double tempDy = dy;
-							double tempDyO = o.dy;
+						double deltaDx = tempDx - dx;
+						double deltaDxO = tempDxO - o.dx;
 
+
+						double tempDy = dy;
+						double tempDyO = o.dy;
+						if (!noY)
+						{
 							dy = newVelocity(mass, o.mass, tempDy, tempDyO);
 							o.dy = newVelocity(o.mass, mass, tempDyO, tempDy);
 						}
 
+						double deltaDy = tempDy - dy;
+						double deltaDyO = tempDyO - o.dy;
+
+						if (percentHorizontal >= 1)
+						{
+							percentHorizontal = 0.9999;
+						}
+						else if (percentHorizontal <= 0)
+						{
+							percentHorizontal = 0.0001;
+						}
+
+						//TODO correct direction of force + add fro other object
+						/*
+							alpha = 90° - beta
+							a = c·cos(beta)
+							b = sqrt(c² - a²)
+
+							c = dx
+							a = new dx
+							b = to add to dy
+
+							first i get c from deltaDy and deltaDy.
+							that c will now be rotated to the right angel
+							then will be separated to deltaDy and deltaDx again and teh applied to the dx and dy
+						 */
+						//noinspection ConstantConditions
+						if (true)
+						{
+							deg = percentHorizontal * 90;
+
+							double[] temp =  getRightDDelta(deltaDx,deltaDy,deg);
+							dx = -deltaDx + temp[0];
+							dy = -deltaDy + temp[1];
+
+							temp =  getRightDDelta(deltaDxO,deltaDyO,deg);
+							o.dx = -deltaDxO + temp[0];
+							o.dy = -deltaDyO + temp[1];
+						}
 					}
+
+					 o.setCalculated(true);
+					setCalculated(true);
+					break;
 				}
 			}
 		}
@@ -177,8 +220,54 @@ public abstract class PhyObj
 		return collisionDetected;
 	}
 
-	private void checkBounds(Shape block) {
+	private double[] getRightDDelta(double deltaDx, double deltaDy, double deg)
+	{
+		double c = Math.sqrt(deltaDx*deltaDx+deltaDy*deltaDy);
 
+		if(c>10)
+		{
+			c = 10;
+		}
+
+		double a = c * Math.cos(Math.toRadians(deg));
+		double b = Math.sqrt(c * c - a * a);
+
+		System.out.println(a);
+
+		if (deltaDy < 0)
+		{
+			deltaDy = -a;
+		}
+		else
+		{
+			deltaDy = a;
+		}
+
+
+		if (deltaDx < 0)
+		{
+			deltaDx = -b;
+		}
+		else
+		{
+			deltaDx = b;
+		}
+
+		if(deltaDx > 10)
+		{
+			deltaDx = 10;
+		}
+
+		if(deltaDy > 10)
+		{
+			deltaDy = 10;
+		}
+
+		double[] temp = new double[2];
+		temp[0] = deltaDx;
+		temp[1] = deltaDy;
+
+		return temp;
 	}
 
 	private double newVelocity(double m1, double m2, double v1, double v2)

@@ -3,11 +3,14 @@ package org.openjfx.physik.objects;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
 import org.openjfx.physik.PhysicEnvironment;
+import java.awt.geom.AffineTransform;
 
 import java.util.ArrayList;
 
 public abstract class PhyObj
 {
+	private int lastCol = 0;
+	private PhyObj[] lastColOthers;
 	Shape obj;
 	private double mass = 1;
 	double dx;
@@ -48,12 +51,12 @@ public abstract class PhyObj
 		this.dy = dy;
 	}
 
-	public boolean isCalculated()
+	private boolean isCalculated()
 	{
 		return calculated;
 	}
 
-	public void setCalculated(boolean calculated)
+	private void setCalculated(boolean calculated)
 	{
 		this.calculated = calculated;
 	}
@@ -185,14 +188,59 @@ public abstract class PhyObj
 							that c will now be rotated to the right angel
 							then will be separated to deltaDy and deltaDx again and teh applied to the dx and dy
 						 */
-						//noinspection ConstantConditions
-						if (true)
+						lastCol --;
+						int index = 0;
+
+						boolean alreadyCollided = false;
+						if(lastColOthers == null)
 						{
+							lastColOthers = new PhyObj[3];
+						}
+						else
+						{
+							for (PhyObj v : lastColOthers)
+							{
+								if(o.equals(v))
+								{
+									alreadyCollided = true;
+									System.out.println("test");
+									break;
+								}
+
+								index ++;
+							}
+						}
+
+
+						if(lastCol<0&&alreadyCollided)
+						{
+							lastColOthers[index] = null;
+						}
+
+						if (lastCol<0&&!alreadyCollided)
+						{
+							for (int i = 0; i < lastColOthers.length; i ++)
+							{
+								if(lastColOthers[i]==null)
+								{
+									lastColOthers[i] = o;
+									break;
+								}
+							}
+							lastCol = 20;
 							deg = percentHorizontal * 90;
 
 							double[] temp =  getRightDDelta(deltaDx,deltaDy,deg);
 							dx = -deltaDx + temp[0];
 							dy = -deltaDy + temp[1];
+
+							/*deg -= 180;
+
+							if(deg<0)
+							{
+								deg	+= 360;
+							}
+							 */
 
 							temp =  getRightDDelta(deltaDxO,deltaDyO,deg);
 							o.dx = -deltaDxO + temp[0];
@@ -200,9 +248,9 @@ public abstract class PhyObj
 						}
 					}
 
-					 o.setCalculated(true);
-					setCalculated(true);
-					break;
+					//o.setCalculated(true);
+					//setCalculated(true);
+					//break;
 				}
 			}
 		}
@@ -224,15 +272,8 @@ public abstract class PhyObj
 	{
 		double c = Math.sqrt(deltaDx*deltaDx+deltaDy*deltaDy);
 
-		if(c>10)
-		{
-			c = 10;
-		}
-
 		double a = c * Math.cos(Math.toRadians(deg));
 		double b = Math.sqrt(c * c - a * a);
-
-		System.out.println(a);
 
 		if (deltaDy < 0)
 		{
@@ -253,21 +294,33 @@ public abstract class PhyObj
 			deltaDx = b;
 		}
 
-		if(deltaDx > 10)
-		{
-			deltaDx = 10;
-		}
-
-		if(deltaDy > 10)
-		{
-			deltaDy = 10;
-		}
-
 		double[] temp = new double[2];
 		temp[0] = deltaDx;
 		temp[1] = deltaDy;
-
 		return temp;
+		/*
+		double deg2 = Math.toDegrees(Math.atan2(deltaDy, deltaDy));
+
+		deg = deg-deg2;
+
+		if(deg<0)
+		{
+			deg += 360;
+		}
+
+		double[] pt = {deltaDx, deltaDy};
+		AffineTransform.getRotateInstance(Math.toRadians(deg), 0, 0)
+				.transform(pt, 0, pt, 0, 1);
+
+		System.out.println(deltaDy + "     " + deltaDx);
+
+		if(Double.isInfinite(pt[0])||Double.isInfinite(pt[1])||Double.isNaN(pt[0])||Double.isNaN(pt[1]))
+		{
+			pt = new double[]{0,0};
+		}
+
+		return pt;
+		*/
 	}
 
 	private double newVelocity(double m1, double m2, double v1, double v2)
@@ -279,7 +332,7 @@ public abstract class PhyObj
 
 	}
 
-	public double getMass()
+	double getMass()
 	{
 		return mass;
 	}

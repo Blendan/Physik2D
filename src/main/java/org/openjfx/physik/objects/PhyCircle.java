@@ -36,7 +36,7 @@ public class PhyCircle extends PhyObj
 			{
 				dy = -dy + getMass()*phyEn.getGravity();
 
-				if(dy>-0.3)
+				if(dy>-0.3&&phyEn.getGravity()!=0)
 				{
 					dy = 0;
 				}

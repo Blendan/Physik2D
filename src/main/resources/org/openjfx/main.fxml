@@ -19,7 +19,8 @@
       <HBox prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
             <Label text="Gravity: " />
-            <TextField prefWidth="30.0" text="1" fx:id="txtGravity"/>
+            <TextField prefWidth="60.0" text="1" fx:id="txtGravity"/>
+            <TextField prefWidth="60.0" text="1" fx:id="txtSpeed"/>
             <Button mnemonicParsing="false" text="Render" fx:id="btnRender"/>
             <Button mnemonicParsing="false" text="Pause" fx:id="btnPause"/>
             <Button mnemonicParsing="false" text="Restart" fx:id="btnRestart"/>

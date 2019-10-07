@@ -121,25 +121,7 @@ public abstract class PhyObj
 						double vx = shape.getLayoutX() - obj.getLayoutX();
 						double vy = shape.getLayoutY() - obj.getLayoutY();
 
-						double deg = Math.toDegrees(Math.atan2(vy, vx));
-
-						if (deg < 0)
-						{
-							deg += 360;
-						}
-
-						double number = deg / 360;
-
-						double percentHorizontal;
-
-						if ((number / 0.25) % 2 == 0) //vertical to horizontal
-						{
-							percentHorizontal = 1 - (number % 0.25) * 4;
-						}
-						else //horizontal to vertical
-						{
-							percentHorizontal = (number % 0.25) * 4;
-						}
+						double percentHorizontal = getAngel(vx,vy);
 
 
 						double tempDx = dx;
@@ -203,7 +185,6 @@ public abstract class PhyObj
 								if(o.equals(v))
 								{
 									alreadyCollided = true;
-									System.out.println("test");
 									break;
 								}
 
@@ -228,7 +209,7 @@ public abstract class PhyObj
 								}
 							}
 							lastCol = 20;
-							deg = percentHorizontal * 90;
+							double deg = percentHorizontal * 90;
 
 							double[] temp =  getRightDDelta(deltaDx,deltaDy,deg);
 							dx = -deltaDx + temp[0];
@@ -254,6 +235,64 @@ public abstract class PhyObj
 				}
 			}
 		}
+	}
+
+	public void addForce(double x, double y, double force, double falloff)
+	{
+		double vx = x - obj.getLayoutX();
+		double vy = y - obj.getLayoutY();
+
+		double deg = getAngel(vx,vy) * 90;
+
+		int c = (int) Math.sqrt(vx*vx+vy*vy)/50;
+
+		for (int i = 0; i < c ; i ++)
+		{
+			force *= falloff;
+		}
+
+		System.out.println(force);
+
+		double[] pt = getRightDDelta(force,force,deg);
+
+		if(x>obj.getLayoutX())
+		{
+			pt[0] *= -1;
+		}
+
+		if(y>obj.getLayoutY())
+		{
+			pt[1] *= -1;
+		}
+
+		dx += pt[0];
+		dy += pt[1];
+
+	}
+
+	private double getAngel(double vx, double vy)
+	{
+		double deg = Math.toDegrees(Math.atan2(vy, vx));
+
+		if (deg < 0)
+		{
+			deg += 360;
+		}
+
+		double number = deg / 360;
+
+		double percentHorizontal;
+
+		if ((number / 0.25) % 2 == 0) //vertical to horizontal
+		{
+			percentHorizontal = 1 - (number % 0.25) * 4;
+		}
+		else //horizontal to vertical
+		{
+			percentHorizontal = (number % 0.25) * 4;
+		}
+
+		return percentHorizontal;
 	}
 
 	private boolean collides(PhyObj block)
@@ -298,29 +337,6 @@ public abstract class PhyObj
 		temp[0] = deltaDx;
 		temp[1] = deltaDy;
 		return temp;
-		/*
-		double deg2 = Math.toDegrees(Math.atan2(deltaDy, deltaDy));
-
-		deg = deg-deg2;
-
-		if(deg<0)
-		{
-			deg += 360;
-		}
-
-		double[] pt = {deltaDx, deltaDy};
-		AffineTransform.getRotateInstance(Math.toRadians(deg), 0, 0)
-				.transform(pt, 0, pt, 0, 1);
-
-		System.out.println(deltaDy + "     " + deltaDx);
-
-		if(Double.isInfinite(pt[0])||Double.isInfinite(pt[1])||Double.isNaN(pt[0])||Double.isNaN(pt[1]))
-		{
-			pt = new double[]{0,0};
-		}
-
-		return pt;
-		*/
 	}
 
 	private double newVelocity(double m1, double m2, double v1, double v2)

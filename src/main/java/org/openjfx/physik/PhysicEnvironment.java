@@ -10,7 +10,6 @@ import javafx.util.Duration;
 import org.openjfx.physik.objects.PhyObj;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class PhysicEnvironment
 {
@@ -62,6 +61,15 @@ public class PhysicEnvironment
 		keyframeEvents.add(temp);
 
 		physicObjs.add(phyObj);
+	}
+
+	public void addForce(double x, double y, double force, double falloff)
+	{
+		System.out.println("TTTTTTTTTTTTTT");
+		for (PhyObj v : physicObjs)
+		{
+			v.addForce(x,y,force,falloff);
+		}
 	}
 
 	public void setSpeed(double percent)

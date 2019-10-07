@@ -1,8 +1,10 @@
 package org.openjfx;
 
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -41,6 +43,8 @@ public class Controller implements Initializable
 		NumberFormat formatter = new DecimalFormat("#0.00");
 		txtGravity.setText(formatter.format(physicEnvironment.getGravity()));
 		physicEnvironment.setPause(true);
+
+		canvas.setOnMouseClicked(event -> physicEnvironment.addForce(event.getSceneX(),event.getSceneY(),10,0.3));
 
 		start();
 	}

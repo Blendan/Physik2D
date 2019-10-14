@@ -8,17 +8,22 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import org.openjfx.physik.PhysicEnvironment;
 import org.openjfx.physik.objects.PhyCircle;
 import org.openjfx.physik.objects.PhyObj;
+import org.openjfx.physik.objects.PhyRectangle;
 
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable
 {
+	private Random rand = new Random();
+
 	public Pane canvas;
 	public Button btnRender;
 	public TextField txtGravity;
@@ -55,23 +60,31 @@ public class Controller implements Initializable
 
 		PhyObj temp;
 
-		for (int i = 0; i < 30; i ++)
+		for (int i = 0; i < 5; i ++)
 		{
+			int r = rand.nextInt(255);
+			int g = rand.nextInt(255);
+			int b = rand.nextInt(255);
+
 			double size = Math.random()*20+5;
-			temp = new PhyCircle(new Circle(size, Color.CADETBLUE),physicEnvironment);
+			temp = new PhyCircle(new Circle(size, Color.rgb(r,g,b)),physicEnvironment);
 			temp.getObj().relocate(Math.random()*400, (Math.random()+size)*10);
 			temp.setDx(Math.random()*40-10);
 			temp.setDy(Math.random()*20-5);
 			temp.setMass(size);
 			physicEnvironment.addNew(temp);
-		}
 
-		temp = new PhyCircle(new Circle(40, Color.RED),physicEnvironment);
-		temp.getObj().relocate(Math.random()*400, (Math.random())*10);
-		temp.setDx(Math.random()*40-10);
-		temp.setDy(Math.random()*20-5);
-		temp.setMass(999999);
-		//physicEnvironment.addNew(temp);
+			r = rand.nextInt(255);
+			g = rand.nextInt(255);
+			b = rand.nextInt(255);
+
+			temp = new PhyRectangle(new Rectangle(Math.random()*200,Math.random()*80, Color.rgb(r,g,b)),physicEnvironment);
+			temp.getObj().relocate(Math.random()*400, (Math.random())*10);
+			temp.setDx(20);
+			temp.setDy(20);
+			temp.setMass(5);
+			physicEnvironment.addNew(temp);
+		}
 	}
 
 	private void renderSettings()

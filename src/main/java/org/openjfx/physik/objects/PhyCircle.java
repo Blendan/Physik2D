@@ -51,7 +51,7 @@ public class PhyCircle extends PhyObj
 			obj.setLayoutY(maxY-((Circle) obj).getRadius());
 		}
 
-		collision();
+		collision(true);
 
 		if(obj.getLayoutY() + ((Circle) obj).getRadius() > maxY)
 		{

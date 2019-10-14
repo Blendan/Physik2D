@@ -3,9 +3,11 @@ package org.openjfx.physik.objects;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
 import org.openjfx.physik.PhysicEnvironment;
+
 import java.awt.geom.AffineTransform;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public abstract class PhyObj
 {
@@ -29,7 +31,7 @@ public abstract class PhyObj
 		return obj;
 	}
 
-	public abstract void update(Pane bounds);
+	public abstract void update(Pane pane);
 
 	public double getDx()
 	{
@@ -61,7 +63,7 @@ public abstract class PhyObj
 		this.calculated = calculated;
 	}
 
-	void collision()
+	void collision(Boolean useEnhanced)
 	{
 		ArrayList<PhyObj> list = phyEn.getObjs();
 		setCalculated(false);
@@ -121,7 +123,7 @@ public abstract class PhyObj
 						double vx = shape.getLayoutX() - obj.getLayoutX();
 						double vy = shape.getLayoutY() - obj.getLayoutY();
 
-						double percentHorizontal = getAngel(vx,vy);
+						double percentHorizontal = getAngel(vx, vy);
 
 
 						double tempDx = dx;
@@ -170,11 +172,11 @@ public abstract class PhyObj
 							that c will now be rotated to the right angel
 							then will be separated to deltaDy and deltaDx again and teh applied to the dx and dy
 						 */
-						lastCol --;
+						lastCol--;
 						int index = 0;
 
 						boolean alreadyCollided = false;
-						if(lastColOthers == null)
+						if (lastColOthers == null)
 						{
 							lastColOthers = new PhyObj[3];
 						}
@@ -182,27 +184,27 @@ public abstract class PhyObj
 						{
 							for (PhyObj v : lastColOthers)
 							{
-								if(o.equals(v))
+								if (o.equals(v))
 								{
 									alreadyCollided = true;
 									break;
 								}
 
-								index ++;
+								index++;
 							}
 						}
 
 
-						if(lastCol<0&&alreadyCollided)
+						if (lastCol < 0 && alreadyCollided)
 						{
 							lastColOthers[index] = null;
 						}
 
-						if (lastCol<0&&!alreadyCollided)
+						if (lastCol < 0 && !alreadyCollided && useEnhanced)
 						{
-							for (int i = 0; i < lastColOthers.length; i ++)
+							for (int i = 0; i < lastColOthers.length; i++)
 							{
-								if(lastColOthers[i]==null)
+								if (lastColOthers[i] == null)
 								{
 									lastColOthers[i] = o;
 									break;
@@ -211,7 +213,7 @@ public abstract class PhyObj
 							lastCol = 20;
 							double deg = percentHorizontal * 90;
 
-							double[] temp =  getRightDDelta(deltaDx,deltaDy,deg);
+							double[] temp = getRightDDelta(deltaDx, deltaDy, deg);
 							dx = -deltaDx + temp[0];
 							dy = -deltaDy + temp[1];
 
@@ -223,7 +225,7 @@ public abstract class PhyObj
 							}
 							 */
 
-							temp =  getRightDDelta(deltaDxO,deltaDyO,deg);
+							temp = getRightDDelta(deltaDxO, deltaDyO, deg);
 							o.dx = -deltaDxO + temp[0];
 							o.dy = -deltaDyO + temp[1];
 						}
@@ -242,25 +244,25 @@ public abstract class PhyObj
 		double vx = x - obj.getLayoutX();
 		double vy = y - obj.getLayoutY();
 
-		double deg = getAngel(vx,vy) * 90;
+		double deg = getAngel(vx, vy) * 90;
 
-		int c = (int) Math.sqrt(vx*vx+vy*vy)/50;
+		int c = (int) Math.sqrt(vx * vx + vy * vy) / 50;
 
-		for (int i = 0; i < c ; i ++)
+		for (int i = 0; i < c; i++)
 		{
 			force *= falloff;
 		}
 
 		System.out.println(force);
 
-		double[] pt = getRightDDelta(force,force,deg);
+		double[] pt = getRightDDelta(force, force, deg);
 
-		if(x>obj.getLayoutX())
+		if (x > obj.getLayoutX())
 		{
 			pt[0] *= -1;
 		}
 
-		if(y>obj.getLayoutY())
+		if (y > obj.getLayoutY())
 		{
 			pt[1] *= -1;
 		}
@@ -309,7 +311,7 @@ public abstract class PhyObj
 
 	private double[] getRightDDelta(double deltaDx, double deltaDy, double deg)
 	{
-		double c = Math.sqrt(deltaDx*deltaDx+deltaDy*deltaDy);
+		double c = Math.sqrt(deltaDx * deltaDx + deltaDy * deltaDy);
 
 		double a = c * Math.cos(Math.toRadians(deg));
 		double b = Math.sqrt(c * c - a * a);
@@ -341,8 +343,8 @@ public abstract class PhyObj
 
 	private double newVelocity(double m1, double m2, double v1, double v2)
 	{
-		double i1 = ((m1-m2)/(m1+m2))*v1;
-		double i2 = ((m2*2)/(m1+m2))*v2;
+		double i1 = ((m1 - m2) / (m1 + m2)) * v1;
+		double i2 = ((m2 * 2) / (m1 + m2)) * v2;
 
 		return i1 + i2;
 
